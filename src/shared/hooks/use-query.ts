@@ -120,6 +120,7 @@ export default function useQuery<T>({
     cacheData,
     navigate,
     queryFunction,
+    setAlertBarAtom,
     setAuthAtom,
     setRequestData,
   ]);

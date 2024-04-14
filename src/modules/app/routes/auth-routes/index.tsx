@@ -6,10 +6,32 @@ import { LOADING } from '../../../../shared/constants/common';
 
 const LoginLazyComponent = lazy(() => import('../../../login/components'));
 const HomeLazyComponent = lazy(() => import('../../../home/components'));
+const NewChatLazyComponent = lazy(
+  () => import('../../../chat/components/new-chat')
+);
+const ChatLazyComponent = lazy(() => import('../../../chat/components'));
 
 export function AppProtectedRoutes() {
   return (
     <Routes>
+      <Route
+        key={ROUTES.NEW_CHAT}
+        path={ROUTES.NEW_CHAT}
+        element={
+          <Suspense fallback={<Loader size={32} secondary={LOADING} />}>
+            <NewChatLazyComponent />
+          </Suspense>
+        }
+      />
+      <Route
+        key={ROUTES.CHAT}
+        path={ROUTES.CHAT}
+        element={
+          <Suspense fallback={<Loader size={32} secondary={LOADING} />}>
+            <ChatLazyComponent />
+          </Suspense>
+        }
+      />
       <Route
         key={ROUTES.HOME}
         path={ROUTES.HOME}

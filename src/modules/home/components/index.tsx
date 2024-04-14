@@ -1,11 +1,19 @@
 import useQuery from '../../../shared/hooks/use-query';
 import { ChatList } from '../../../shared/types/chat.type';
-import { ChatListAtom } from '../../../shared/states/chat-list';
+import { ChatListAtom } from '../../../shared/states/chat';
 import getChatList from '../request/get-chat-list';
 import { Container, Divider, Paper, Typography } from '@mui/material';
 import Loader from '../../../shared/components/loaders/loader';
+import { useNavigate } from 'react-router-dom';
 
 function Home() {
+  const navigate = useNavigate();
+  const handleOpenChat = (chat: string) => {
+    navigate(`/chat/${chat}`, {
+      replace: true,
+    });
+  };
+
   const {
     requestData: { data, loading, fetched },
   } = useQuery<ChatList>({
@@ -18,6 +26,7 @@ function Home() {
       <Typography
         variant="h3"
         style={{
+          fontWeight: 'bold',
           marginTop: '30px',
         }}
       >
@@ -25,7 +34,9 @@ function Home() {
       </Typography>
       <Divider style={{ width: '90%', borderBottomWidth: 2, margin: '20px' }} />
       {loading ? (
-        <Loader />
+        <div className="my-20">
+          <Loader />
+        </div>
       ) : (
         <Container>
           <Paper
@@ -41,7 +52,12 @@ function Home() {
             </Typography>
           </Paper>
           {data?.map((chat, index) => (
-            <Paper elevation={2} className={'mb-5 p-5'} key={`chat::${index}`}>
+            <Paper
+              elevation={2}
+              className={'mb-5 p-5'}
+              key={`chat::${index}`}
+              onClick={() => handleOpenChat(chat)}
+            >
               <Typography variant="h5" className="text-center">
                 {chat}
               </Typography>
