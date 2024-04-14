@@ -1,28 +1,30 @@
-import React, { memo, useEffect, useState } from 'react';
+import React from 'react';
 import {
   AppProtectedRoutes,
   AppUnprotectedRoutes,
 } from '../routes/auth-routes';
-import { Provider, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { AuthAtom } from '../../../shared/states/authenticated';
+import { AlertBar } from '../../../shared/components/alert-bar/alert-bar';
 
-const App = memo(() => {
-  const [cacheKey, setCacheKey] = useState('');
+const App = () => {
   const authAtom = useAtomValue(AuthAtom);
-
-  useEffect(() => {
-    setCacheKey(Date.now().toString());
-  }, []);
 
   if (authAtom.isAuthenticated) {
     return (
-      <Provider key={cacheKey}>
+      <>
         <AppProtectedRoutes />
-      </Provider>
+        <AlertBar />
+      </>
     );
   }
 
-  return <AppUnprotectedRoutes />;
-});
+  return (
+    <>
+      <AppUnprotectedRoutes />
+      <AlertBar />
+    </>
+  );
+};
 
 export default App;
