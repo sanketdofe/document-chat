@@ -115,6 +115,7 @@ const NewChat = () => {
         value={chatName}
         onChange={handleChatNameChange}
         disabled={submitted}
+        inputProps={{ maxLength: 20 }}
       />
 
       <Button className="w-11/12" variant="outlined" component="label">
