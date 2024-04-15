@@ -1,5 +1,6 @@
 import { getRequest } from '../../../shared/infra/rest';
 import {
+  CheckIfChatIsReadyResponse,
   GetChatRequest,
   GetChatResponse,
 } from '../../../shared/types/chat.type';
@@ -8,7 +9,7 @@ type GetChat = GetChatRequest & {
   authToken: string;
 };
 
-const getChat = async ({
+export const getChat = async ({
   authToken,
   chatId,
 }: GetChat): Promise<GetChatResponse> => {
@@ -18,4 +19,9 @@ const getChat = async ({
   );
 };
 
-export default getChat;
+export const checkIsChatReady = async (chatId: string, authToken: string) => {
+  return await getRequest<CheckIfChatIsReadyResponse>(
+    `http://localhost:3002/${chatId}/is-ready`,
+    authToken
+  );
+};

@@ -11,13 +11,13 @@ const generateResponse = async ({
   authToken,
   ...body
 }: GenerateResponse): Promise<GenerateQuestionResponse> => {
-  return await postRequest<GenerateQuestionResponse>(
-    'http://localhost:3001/',
-    authToken,
-    {
+  return await postRequest<GenerateQuestionResponse>({
+    url: 'http://localhost:3001/',
+    authToken: authToken,
+    options: {
       body: JSON.stringify(body),
-    }
-  );
+    },
+  });
 };
 
 export default generateResponse;

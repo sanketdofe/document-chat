@@ -1,7 +1,7 @@
 import useQuery from '../../../shared/hooks/use-query';
 import { GetChatResponse } from '../../../shared/types/chat.type';
 import { ChatAtom } from '../../../shared/states/chat';
-import getChat from '../request/get-chat';
+import { checkIsChatReady, getChat } from '../request/get-chat';
 import {
   Accordion,
   AccordionDetails,
@@ -31,6 +31,7 @@ const Chat = () => {
   const authAtomValue = useAtomValue(AuthAtom);
   const setChatAtom = useSetAtom(ChatAtom);
   const [isFetchingResponse, setIsFetchingResponse] = useState(false);
+  const [isChatReady, setIsChatReady] = useState(false);
   const [currentChatHistory, setCurrentChatHistory] = useState<
     Array<{
       type: 'human' | 'agent';
@@ -44,6 +45,7 @@ const Chat = () => {
     requestAtom: ChatAtom,
     queryFunction: (authToken) =>
       getChat({ chatId: params.chatId ?? '', authToken }),
+    cacheData: true,
   });
 
   useEffect(() => {
@@ -67,12 +69,49 @@ const Chat = () => {
         replace: true,
       });
     }
+    setIsChatReady(chatResponse.data?.isChatReady ?? false);
   }, [
     params.chatId,
     chatResponse.error,
     navigate,
     setAlertBarAtom,
     setChatAtom,
+    chatResponse.data?.isChatReady,
+  ]);
+
+  useEffect(() => {
+    const checkChatReady = async () => {
+      try {
+        const response = await checkIsChatReady(
+          params.chatId ?? '',
+          authAtomValue.token
+        );
+        setIsChatReady(response.isChatReady);
+        if (!response.isChatReady) {
+          setTimeout(checkChatReady, 1000);
+        }
+      } catch (e: any) {
+        setAlertBarAtom({
+          open: true,
+          severity: 'error',
+          message: e.message,
+          timeout: 5000,
+        });
+        navigate(ROUTES.HOME, {
+          replace: true,
+        });
+      }
+    };
+
+    if (!isChatReady) {
+      checkChatReady();
+    }
+  }, [
+    authAtomValue.token,
+    isChatReady,
+    navigate,
+    params.chatId,
+    setAlertBarAtom,
   ]);
 
   const handleGenerateResponse = useCallback(async () => {
@@ -128,26 +167,28 @@ const Chat = () => {
             </Typography>
           </Breadcrumbs>
           <Divider style={{ width: '100%', borderBottomWidth: 2 }} />
-          {chatResponse.data?.documents?.map((document) => (
-            <Accordion className="w-full" key={document.key}>
-              <AccordionSummary
-                style={{
-                  fontWeight: 'bold',
-                }}
-                expandIcon={<></>}
-              >
-                View Documents accessible via this chat
-              </AccordionSummary>
-              <AccordionDetails>
+          <Accordion className="w-full">
+            <AccordionSummary
+              style={{
+                fontWeight: 'bold',
+              }}
+              expandIcon={<></>}
+            >
+              View Documents accessible via this chat
+            </AccordionSummary>
+            <AccordionDetails>
+              {chatResponse.data?.documents?.map((document) => (
                 <Button
+                  fullWidth
+                  key={document.key}
                   variant={'text'}
                   onClick={() => openInNewTab(document.url)}
                 >
                   {document.key.replace(`${chatResponse.data?.id}/`, '')}
                 </Button>
-              </AccordionDetails>
-            </Accordion>
-          ))}
+              ))}
+            </AccordionDetails>
+          </Accordion>
           <Divider style={{ width: '100%', borderBottomWidth: 2 }} />
           <Grid
             spacing={3}
@@ -181,9 +222,11 @@ const Chat = () => {
           <TextField
             style={{ width: '100%' }}
             label={
-              isFetchingResponse
-                ? 'Generating Response...'
-                : 'Enter any question and hit Enter'
+              chatResponse.data?.isChatReady
+                ? isFetchingResponse
+                  ? 'Generating Response...'
+                  : 'Enter any question and hit Enter'
+                : 'Please wait for the chat to be ready'
             }
             value={currentQuestion}
             onChange={(e) => setCurrentQuestion(e.target.value)}
@@ -192,7 +235,7 @@ const Chat = () => {
                 handleGenerateResponse();
               }
             }}
-            disabled={isFetchingResponse}
+            disabled={isFetchingResponse || !chatResponse.data?.isChatReady}
           />
           <Typography
             variant="caption"

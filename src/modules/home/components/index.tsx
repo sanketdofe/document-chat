@@ -46,6 +46,7 @@ function Home() {
               backgroundColor: '#2196F3FF',
               color: 'white',
             }}
+            onClick={() => handleOpenChat('new')}
           >
             <Typography variant="h5" className="text-center">
               New Chat

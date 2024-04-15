@@ -15,11 +15,9 @@ const defaultHeaders = {
 
 export async function makeRequest<T>(
   url: string,
-  authToken: string,
+  authToken?: string,
   options?: RequestInit
 ): Promise<T> {
-  const token = authToken;
-
   const { method = Methods.GET, body, headers } = options ?? {};
 
   let response: Response;
@@ -29,7 +27,8 @@ export async function makeRequest<T>(
       body,
       headers: {
         ...defaultHeaders,
-        Authorization: token,
+        ...headers,
+        ...(authToken && { Authorization: authToken }),
       },
     });
   } catch (requestError) {
@@ -77,11 +76,17 @@ export async function getRequest<T>(
   });
 }
 
-export async function postRequest<T>(
-  url: string,
-  authToken: string,
-  options?: RequestInit
-): Promise<T> {
+interface PostRequestParams {
+  url: string;
+  authToken?: string;
+  options?: RequestInit;
+}
+
+export async function postRequest<T>({
+  url,
+  authToken,
+  options,
+}: PostRequestParams): Promise<T> {
   return makeRequest<T>(url, authToken, {
     ...options,
     method: Methods.POST,

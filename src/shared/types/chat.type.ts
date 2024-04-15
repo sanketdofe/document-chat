@@ -6,15 +6,20 @@ export type ChatListResponse = {
 };
 
 export type NewChatRequest = {
-  title: string;
+  name: string;
   documentNames: Array<string>;
 };
 
 export type NewChatResponse = {
-  presignedUrls: Array<{
-    url: string;
-    key: string;
-  }>;
+  credentials: {
+    AccessKeyId: string;
+    SecretAccessKey: string;
+    SessionToken: string;
+    Expiration: string;
+  };
+  bucket: string;
+  keys: string[];
+  region: string;
 };
 
 export type GetChatRequest = {
@@ -27,6 +32,11 @@ export type GetChatResponse = {
     url: string;
     key: string;
   }>;
+  isChatReady: boolean;
+};
+
+export type CheckIfChatIsReadyResponse = {
+  id: string;
   isChatReady: boolean;
 };
 
