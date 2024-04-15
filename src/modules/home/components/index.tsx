@@ -2,14 +2,29 @@ import useQuery from '../../../shared/hooks/use-query';
 import { ChatList } from '../../../shared/types/chat.type';
 import { ChatListAtom } from '../../../shared/states/chat';
 import getChatList from '../request/get-chat-list';
-import { Container, Divider, Paper, Typography } from '@mui/material';
+import { Button, Container, Divider, Paper, Typography } from '@mui/material';
 import Loader from '../../../shared/components/loaders/loader';
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '../../../shared/constants/routes';
+import { AuthAtom } from '../../../shared/states/authenticated';
+import { useSetAtom } from 'jotai';
 
 function Home() {
   const navigate = useNavigate();
+  const setAuthAtom = useSetAtom(AuthAtom);
   const handleOpenChat = (chat: string) => {
     navigate(`/chat/${chat}`, {
+      replace: true,
+    });
+  };
+
+  const handleLogout = () => {
+    setAuthAtom({
+      token: '',
+      isAuthenticated: false,
+    });
+    localStorage.clear();
+    navigate(ROUTES.LOGIN, {
       replace: true,
     });
   };
@@ -66,6 +81,9 @@ function Home() {
           ))}
         </Container>
       )}
+      <Button variant="contained" color="primary" onClick={handleLogout}>
+        Logout
+      </Button>
     </div>
   );
 }
