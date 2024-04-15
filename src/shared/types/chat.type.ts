@@ -41,6 +41,7 @@ export type CheckIfChatIsReadyResponse = {
 };
 
 export type GenerateQuestionResponseRequest = {
+  model: string;
   chatId: string;
   question: string;
   chatHistory: Array<{

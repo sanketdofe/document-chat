@@ -9,7 +9,10 @@ import {
   Breadcrumbs,
   Button,
   Divider,
+  FormControlLabel,
   Link,
+  Radio,
+  RadioGroup,
   TextField,
   Typography,
 } from '@mui/material';
@@ -40,6 +43,7 @@ const Chat = () => {
   >([]);
 
   const [currentQuestion, setCurrentQuestion] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<string>('LLAMA');
 
   const { requestData: chatResponse } = useQuery<GetChatResponse>({
     requestAtom: ChatAtom,
@@ -124,6 +128,7 @@ const Chat = () => {
       chatId: chatResponse.data?.id,
       chatHistory: currentChatHistory,
       question: currentQuestion,
+      model: selectedModel,
     }).catch((e) => {
       return {
         chatHistory: currentChatHistory,
@@ -138,6 +143,12 @@ const Chat = () => {
     currentChatHistory,
     currentQuestion,
   ]);
+
+  const handleChangeModelRadioButton = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setSelectedModel(event.target.value);
+  };
 
   return (
     <div className="flex flex-col justify-center w-9/12 m-auto">
@@ -219,6 +230,18 @@ const Chat = () => {
             ))}
           </Grid>
           <Divider style={{ width: '100%', borderBottomWidth: 2 }} />
+          <RadioGroup
+            row
+            value={selectedModel}
+            onChange={handleChangeModelRadioButton}
+          >
+            <FormControlLabel value="LLAMA" control={<Radio />} label="Llama" />
+            <FormControlLabel
+              value="CLAUDE"
+              control={<Radio />}
+              label="Claude"
+            />
+          </RadioGroup>
           <TextField
             style={{ width: '100%' }}
             label={
