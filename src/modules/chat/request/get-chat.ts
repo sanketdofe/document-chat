@@ -4,6 +4,7 @@ import {
   GetChatRequest,
   GetChatResponse,
 } from '../../../shared/types/chat.type';
+import { DOCUMENT_CHAT_CRUD_BASE_URL } from '../../../shared/config/app/request';
 
 type GetChat = GetChatRequest & {
   authToken: string;
@@ -14,14 +15,14 @@ export const getChat = async ({
   chatId,
 }: GetChat): Promise<GetChatResponse> => {
   return await getRequest<GetChatResponse>(
-    `http://localhost:3002/${chatId}`,
+    `${DOCUMENT_CHAT_CRUD_BASE_URL}${chatId}`,
     authToken
   );
 };
 
 export const checkIsChatReady = async (chatId: string, authToken: string) => {
   return await getRequest<CheckIfChatIsReadyResponse>(
-    `http://localhost:3002/${chatId}/is-ready`,
+    `${DOCUMENT_CHAT_CRUD_BASE_URL}${chatId}/is-ready`,
     authToken
   );
 };

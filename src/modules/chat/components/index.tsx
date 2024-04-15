@@ -23,7 +23,7 @@ import { ROUTES } from '../../../shared/constants/routes';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { AlertBarAtom } from '../../../shared/states/alert-bar';
 import { openInNewTab } from '../../../shared/utils/common';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import generateResponse from '../request/generate-response';
 import { AuthAtom } from '../../../shared/states/authenticated';
 
@@ -150,6 +150,16 @@ const Chat = () => {
     setSelectedModel(event.target.value);
   };
 
+  const chatHistoryEndRef = useRef<null | HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    chatHistoryEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [currentChatHistory]);
+
   return (
     <div className="flex flex-col justify-center w-9/12 m-auto">
       {chatResponse.loading ? (
@@ -228,6 +238,7 @@ const Chat = () => {
                 </Grid>
               </>
             ))}
+            <div ref={chatHistoryEndRef} />
           </Grid>
           <Divider style={{ width: '100%', borderBottomWidth: 2 }} />
           <RadioGroup
@@ -245,7 +256,7 @@ const Chat = () => {
           <TextField
             style={{ width: '100%' }}
             label={
-              chatResponse.data?.isChatReady
+              isChatReady
                 ? isFetchingResponse
                   ? 'Generating Response...'
                   : 'Enter any question and hit Enter'
@@ -258,7 +269,7 @@ const Chat = () => {
                 handleGenerateResponse();
               }
             }}
-            disabled={isFetchingResponse || !chatResponse.data?.isChatReady}
+            disabled={isFetchingResponse || !isChatReady}
           />
           <Typography
             variant="caption"
