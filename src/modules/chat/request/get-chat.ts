@@ -15,7 +15,7 @@ export const getChat = async ({
   chatId,
 }: GetChat): Promise<GetChatResponse> => {
   return await getRequest<GetChatResponse>(
-    `${DOCUMENT_CHAT_CRUD_BASE_URL}${chatId}`,
+    `${DOCUMENT_CHAT_CRUD_BASE_URL}${encodeURIComponent(chatId)}`,
     authToken
   );
 };

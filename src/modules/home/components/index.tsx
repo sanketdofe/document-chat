@@ -13,7 +13,7 @@ function Home() {
   const navigate = useNavigate();
   const setAuthAtom = useSetAtom(AuthAtom);
   const handleOpenChat = (chat: string) => {
-    navigate(`/chat/${chat}`, {
+    navigate(`/chat/${encodeURIComponent(chat)}`, {
       replace: true,
     });
   };
